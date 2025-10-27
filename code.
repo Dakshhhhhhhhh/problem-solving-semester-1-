@@ -1,0 +1,523 @@
+# Financial Management Application - Beginner Version
+
+# Global variables
+transaction_id = 1
+transactions = []
+categories = ["Food", "Transport", "Bills", "Entertainment", "Shopping", "Salary", "Other"]
+
+def show_main_menu():
+    print("\n")
+    print("**********************************")
+    print("    MONEY MANAGER APPLICATION")
+    print("**********************************")
+    print("1. Add New Transaction")
+    print("2. See All Transactions") 
+    print("3. Change Transaction")
+    print("4. Remove Transaction")
+    print("5. Show Money Summary")
+    print("6. Show Spending by Category")
+    print("7. Find Transactions")
+    print("8. Quit Program")
+    print("**********************************")
+
+def add_new_transaction():
+    global transaction_id
+    
+    print("\n--- ADD NEW TRANSACTION ---")
+    
+    # Get transaction type
+    print("What type of transaction?")
+    print("1. Income (money coming in)")
+    print("2. Expense (money going out)")
+    type_input = input("Enter 1 or 2: ")
+    
+    if type_input == "1":
+        trans_type = "Income"
+    elif type_input == "2":
+        trans_type = "Expense"
+    else:
+        print("Wrong input! Going back to menu.")
+        return
+    
+    # Get amount
+    amount_input = input("Enter amount: ")
+    # Simple check if it's a number
+    is_number = True
+    for char in amount_input:
+        if char not in "0123456789.":
+            is_number = False
+            break
+    
+    if not is_number:
+        print("Amount must be a number! Going back to menu.")
+        return
+    
+    amount = float(amount_input)
+    
+    if amount <= 0:
+        print("Amount must be positive! Going back to menu.")
+        return
+    
+    # Get category
+    print("\nSelect category:")
+    counter = 1
+    for cat in categories:
+        print(f"{counter}. {cat}")
+        counter += 1
+    
+    cat_input = input("Enter category number: ")
+    
+    if cat_input == "1":
+        category = categories[0]
+    elif cat_input == "2":
+        category = categories[1]
+    elif cat_input == "3":
+        category = categories[2]
+    elif cat_input == "4":
+        category = categories[3]
+    elif cat_input == "5":
+        category = categories[4]
+    elif cat_input == "6":
+        category = categories[5]
+    elif cat_input == "7":
+        category = categories[6]
+    else:
+        print("Invalid category! Using 'Other'.")
+        category = "Other"
+    
+    # Get description
+    desc = input("Enter description: ")
+    
+    # Get date
+    date = input("Enter date (DD-MM-YYYY): ")
+    
+    # Create transaction (using tuple)
+    new_trans = (transaction_id, trans_type, amount, category, desc, date)
+    transactions.append(new_trans)
+    
+    print(f"Transaction added! ID: {transaction_id}")
+    transaction_id += 1
+
+def show_all_transactions():
+    print("\n--- ALL TRANSACTIONS ---")
+    
+    if len(transactions) == 0:
+        print("No transactions found!")
+        return
+    
+    # Print header
+    print("ID  Type    Amount    Category       Description         Date")
+    print("------------------------------------------------------------")
+    
+    # Print each transaction
+    i = 0
+    while i < len(transactions):
+        trans = transactions[i]
+        print(f"{trans[0]}   {trans[1]}   ${trans[2]:.2f}    {trans[3]:12}   {trans[4]:15}   {trans[5]}")
+        i += 1
+
+def modify_transaction():
+    print("\n--- MODIFY TRANSACTION ---")
+    
+    if len(transactions) == 0:
+        print("No transactions to modify!")
+        return
+    
+    show_all_transactions()
+    
+    id_input = input("\nEnter transaction ID to modify: ")
+    
+    # Find the transaction
+    found_index = -1
+    j = 0
+    while j < len(transactions):
+        if str(transactions[j][0]) == id_input:
+            found_index = j
+            break
+        j += 1
+    
+    if found_index == -1:
+        print("Transaction ID not found!")
+        return
+    
+    old_trans = transactions[found_index]
+    print(f"\nModifying Transaction ID: {old_trans[0]}")
+    
+    # Get new type
+    print("Transaction type (current: " + old_trans[1] + ")")
+    print("1. Income")
+    print("2. Expense")
+    type_choice = input("Enter 1 or 2 (press Enter to keep current): ")
+    
+    if type_choice == "":
+        new_type = old_trans[1]
+    elif type_choice == "1":
+        new_type = "Income"
+    elif type_choice == "2":
+        new_type = "Expense"
+    else:
+        print("Invalid choice! Keeping current type.")
+        new_type = old_trans[1]
+    
+    # Get new amount
+    amount_input = input(f"Amount (current: {old_trans[2]}) (press Enter to keep current): ")
+    
+    if amount_input == "":
+        new_amount = old_trans[2]
+    else:
+        # Check if it's a number
+        is_num = True
+        for ch in amount_input:
+            if ch not in "0123456789.":
+                is_num = False
+                break
+        
+        if is_num:
+            new_amount = float(amount_input)
+            if new_amount <= 0:
+                print("Amount must be positive! Keeping current amount.")
+                new_amount = old_trans[2]
+        else:
+            print("Invalid amount! Keeping current amount.")
+            new_amount = old_trans[2]
+    
+    # Get new category
+    print("Categories:")
+    k = 1
+    for cat in categories:
+        print(f"{k}. {cat}")
+        k += 1
+    
+    cat_input = input(f"Category (current: {old_trans[3]}) (1-7, press Enter to keep): ")
+    
+    if cat_input == "":
+        new_category = old_trans[3]
+    elif cat_input == "1":
+        new_category = categories[0]
+    elif cat_input == "2":
+        new_category = categories[1]
+    elif cat_input == "3":
+        new_category = categories[2]
+    elif cat_input == "4":
+        new_category = categories[3]
+    elif cat_input == "5":
+        new_category = categories[4]
+    elif cat_input == "6":
+        new_category = categories[5]
+    elif cat_input == "7":
+        new_category = categories[6]
+    else:
+        print("Invalid category! Keeping current.")
+        new_category = old_trans[3]
+    
+    # Get new description
+    new_desc = input(f"Description (current: {old_trans[4]}): ")
+    if new_desc == "":
+        new_desc = old_trans[4]
+    
+    # Get new date
+    new_date = input(f"Date (current: {old_trans[5]}): ")
+    if new_date == "":
+        new_date = old_trans[5]
+    
+    # Update transaction
+    updated_trans = (old_trans[0], new_type, new_amount, new_category, new_desc, new_date)
+    transactions[found_index] = updated_trans
+    
+    print("Transaction updated successfully!")
+
+def delete_transaction():
+    print("\n--- DELETE TRANSACTION ---")
+    
+    if len(transactions) == 0:
+        print("No transactions to delete!")
+        return
+    
+    show_all_transactions()
+    
+    del_id = input("\nEnter transaction ID to delete: ")
+    
+    # Find and delete
+    found_pos = -1
+    m = 0
+    while m < len(transactions):
+        if str(transactions[m][0]) == del_id:
+            found_pos = m
+            break
+        m += 1
+    
+    if found_pos == -1:
+        print("Transaction ID not found!")
+        return
+    
+    # Show what we're deleting
+    del_trans = transactions[found_pos]
+    print(f"Deleting: ID {del_trans[0]}, {del_trans[1]}, ${del_trans[2]}, {del_trans[3]}")
+    
+    confirm = input("Are you sure? (y/n): ")
+    if confirm.lower() == "y":
+        # Remove the transaction
+        del transactions[found_pos]
+        print("Transaction deleted!")
+        
+        # Re-number all IDs (inefficient but simple)
+        n = 0
+        while n < len(transactions):
+            old_trans = transactions[n]
+            new_trans = (n + 1, old_trans[1], old_trans[2], old_trans[3], old_trans[4], old_trans[5])
+            transactions[n] = new_trans
+            n += 1
+        
+        global transaction_id
+        transaction_id = len(transactions) + 1
+    else:
+        print("Deletion cancelled.")
+
+def show_financial_summary():
+    print("\n--- FINANCIAL SUMMARY ---")
+    
+    if len(transactions) == 0:
+        print("No transactions to summarize!")
+        return
+    
+    total_income = 0
+    total_expenses = 0
+    
+    # Calculate totals
+    p = 0
+    while p < len(transactions):
+        trans = transactions[p]
+        if trans[1] == "Income":
+            total_income += trans[2]
+        else:
+            total_expenses += trans[2]
+        p += 1
+    
+    net_balance = total_income - total_expenses
+    
+    print(f"Total Income:    ${total_income:.2f}")
+    print(f"Total Expenses:  ${total_expenses:.2f}")
+    print(f"Net Balance:     ${net_balance:.2f}")
+    
+    if total_income > 0:
+        savings_percent = (net_balance / total_income) * 100
+        print(f"Savings Rate:    {savings_percent:.1f}%")
+    
+    if net_balance > 0:
+        print("Status: You are saving money!")
+    elif net_balance < 0:
+        print("Status: You are spending more than you earn!")
+    else:
+        print("Status: Income and expenses are equal.")
+
+def show_category_spending():
+    print("\n--- SPENDING BY CATEGORY ---")
+    
+    # Initialize category totals
+    cat_totals = [0, 0, 0, 0, 0, 0, 0]  # One for each category
+    
+    # Calculate category expenses
+    q = 0
+    while q < len(transactions):
+        trans = transactions[q]
+        if trans[1] == "Expense":
+            # Find which category
+            if trans[3] == categories[0]:
+                cat_totals[0] += trans[2]
+            elif trans[3] == categories[1]:
+                cat_totals[1] += trans[2]
+            elif trans[3] == categories[2]:
+                cat_totals[2] += trans[2]
+            elif trans[3] == categories[3]:
+                cat_totals[3] += trans[2]
+            elif trans[3] == categories[4]:
+                cat_totals[4] += trans[2]
+            elif trans[3] == categories[5]:
+                cat_totals[5] += trans[2]
+            elif trans[3] == categories[6]:
+                cat_totals[6] += trans[2]
+        q += 1
+    
+    # Calculate total expenses
+    total_exp = 0
+    r = 0
+    while r < len(cat_totals):
+        total_exp += cat_totals[r]
+        r += 1
+    
+    if total_exp == 0:
+        print("No expense transactions found!")
+        return
+    
+    # Display results
+    print("Category        Amount      Percentage")
+    print("-------------------------------------")
+    
+    s = 0
+    while s < len(categories):
+        if cat_totals[s] > 0:
+            percent = (cat_totals[s] / total_exp) * 100
+            print(f"{categories[s]:15} ${cat_totals[s]:<10.2f} {percent:.1f}%")
+        s += 1
+
+def search_transactions():
+    print("\n--- SEARCH TRANSACTIONS ---")
+    
+    if len(transactions) == 0:
+        print("No transactions to search!")
+        return
+    
+    print("Search by:")
+    print("1. Category")
+    print("2. Date")
+    search_choice = input("Enter 1 or 2: ")
+    
+    if search_choice == "1":
+        # Search by category
+        print("Categories:")
+        t = 1
+        for cat in categories:
+            print(f"{t}. {cat}")
+            t += 1
+        
+        cat_choice = input("Enter category number: ")
+        
+        if cat_choice == "1":
+            search_cat = categories[0]
+        elif cat_choice == "2":
+            search_cat = categories[1]
+        elif cat_choice == "3":
+            search_cat = categories[2]
+        elif cat_choice == "4":
+            search_cat = categories[3]
+        elif cat_choice == "5":
+            search_cat = categories[4]
+        elif cat_choice == "6":
+            search_cat = categories[5]
+        elif cat_choice == "7":
+            search_cat = categories[6]
+        else:
+            print("Invalid category!")
+            return
+        
+        print(f"\nTransactions in category: {search_cat}")
+        print("ID  Type    Amount    Description         Date")
+        print("----------------------------------------------")
+        
+        found_any = False
+        u = 0
+        while u < len(transactions):
+            if transactions[u][3] == search_cat:
+                trans = transactions[u]
+                print(f"{trans[0]}   {trans[1]}   ${trans[2]:.2f}    {trans[4]:15}   {trans[5]}")
+                found_any = True
+            u += 1
+        
+        if not found_any:
+            print("No transactions found in this category!")
+    
+    elif search_choice == "2":
+        # Search by date
+        search_date = input("Enter date to search (DD-MM-YYYY): ")
+        
+        print(f"\nTransactions on date: {search_date}")
+        print("ID  Type    Amount    Category       Description")
+        print("-----------------------------------------------")
+        
+        found_any = False
+        v = 0
+        while v < len(transactions):
+            if transactions[v][5] == search_date:
+                trans = transactions[v]
+                print(f"{trans[0]}   {trans[1]}   ${trans[2]:.2f}    {trans[3]:12}   {trans[4]}")
+                found_any = True
+            v += 1
+        
+        if not found_any:
+            print("No transactions found on this date!")
+    
+    else:
+        print("Invalid search choice!")
+
+def save_data_to_file():
+    # Simple file saving without error handling
+    file = open("money_data.txt", "w")
+    
+    w = 0
+    while w < len(transactions):
+        trans = transactions[w]
+        line = f"{trans[0]},{trans[1]},{trans[2]},{trans[3]},{trans[4]},{trans[5]}\n"
+        file.write(line)
+        w += 1
+    
+    file.close()
+
+def load_data_from_file():
+    global transaction_id, transactions
+    
+    try:
+        file = open("money_data.txt", "r")
+        lines = file.readlines()
+        file.close()
+        
+        transactions = []
+        x = 0
+        while x < len(lines):
+            parts = lines[x].strip().split(',')
+            if len(parts) == 6:
+                trans_id = int(parts[0])
+                trans_type = parts[1]
+                amount = float(parts[2])
+                category = parts[3]
+                description = parts[4]
+                date = parts[5]
+                
+                transaction = (trans_id, trans_type, amount, category, description, date)
+                transactions.append(transaction)
+            x += 1
+        
+        if len(transactions) > 0:
+            transaction_id = transactions[-1][0] + 1
+        else:
+            transaction_id = 1
+            
+    except:
+        # If file doesn't exist or has errors, start fresh
+        transactions = []
+        transaction_id = 1
+
+def main_program():
+    print("Welcome to Simple Money Manager!")
+    print("Loading your data...")
+    load_data_from_file()
+    
+    while True:
+        show_main_menu()
+        user_choice = input("Enter your choice (1-8): ")
+        
+        if user_choice == "1":
+            add_new_transaction()
+        elif user_choice == "2":
+            show_all_transactions()
+        elif user_choice == "3":
+            modify_transaction()
+        elif user_choice == "4":
+            delete_transaction()
+        elif user_choice == "5":
+            show_financial_summary()
+        elif user_choice == "6":
+            show_category_spending()
+        elif user_choice == "7":
+            search_transactions()
+        elif user_choice == "8":
+            print("Saving your data...")
+            save_data_to_file()
+            print("Thank you for using Money Manager! Goodbye!")
+            break
+        else:
+            print("Invalid choice! Please enter 1-8.")
+        
+        input("\nPress Enter to continue...")
+
+# Start the program
+main_program()
